@@ -1,20 +1,12 @@
-    def minReorder(self, n: int, connections: List[List[int]]) -> int:
-        graph = [ [] for i in range(0,n)]
+class Solution:
+    def minReorder(self, n: int, connections: list[list[int]]) -> int:
+        T = Hashable
+        Direction = bool
+        Graph = Mapping[T, Iterable[tuple[T, Direction]]]
 
-        for item in connections:
-            graph[item[0]].append( [item[1],0] )
-            graph[item[1]].append( [item[0],1] )
+        def min_flips(graph: Graph, u: T, parent: T | None = None) -> int:
+            return sum(min_flips(graph, v, u) + d for v, d in graph[u] if v != parent)
 
-        dq = deque()
-        dq.append(0)
-        visited = [0 for i in range(0,n)]
-        visited[0] = 1
-        res = 0
-        while(len(dq)>0):
-            v = dq.popleft()
-            for neib,neg in graph[v]:
-                if(visited[neib] == 0 ):
-                    visited[neib] = 1
-                    dq.append(neib);
-                    if(neg): res += 1
-        return n-1-res
+        g = defaultdict(list)
+        for u, v in connections: g[u].append((v, True)); g[v].append((u, False))
+        return min_flips(g, 0)
